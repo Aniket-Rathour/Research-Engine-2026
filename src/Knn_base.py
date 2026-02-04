@@ -1,5 +1,25 @@
 import numpy as np
 
+#real one that work 
+
+X_train= np.array([[1,1],[2,2],[8,8],[9,9]])
+Y_train = np.array(["A","A","B","B"])
+b= np.array([9,8])
+k=3
+def predict_one(b,X_train , Y_train , k ):
+    dist = X_train - b 
+    distance = np.linalg.norm( dist , axis = 1)
+    index = np.argsort(distance)
+    final = Y_train[index[:k]]
+
+    unique , counts = np.unique(final , return_counts=True )
+
+    return unique[np.argmax(counts)]
+
+print(predict_one(b,X_train , Y_train , k))
+
+# learning from here on ->
+
 b= np.array([9,8])
 
 points = [
