@@ -15,13 +15,7 @@ X_test ,Y_test = X[1000:1010] , y[1000:1010]
 k=10
 
 
-def process(Image_path):
-    img = Image.open(Image_path).convert("L")
-    img = img.resize((28,28))
-    img = ImageOps.invert(img)
-    img_array = np.array(img)/255.0
 
-    return img_array.flatten()
 
 def predict_one(b,X_train , Y_train , k ):
     
@@ -62,13 +56,33 @@ def draw(event):
 
 canvas.bind("<B1-Motion>",draw)
 
+def process(Image_path):
+    img = Image.open(Image_path).convert("L")
+    img = ImageOps.invert(img)
+    bbox = img.getbbox() 
+    if bbox:
+        img = img.crop(bbox)
+    img = img.resize((28,28))
+
+    img.thumbnail((20, 20), Image.Resampling.LANCZOS)
+    
+    new_img = Image.new("L", (28, 28), 0)
+    w, h = img.size
+    new_img.paste(img, ((28 - w) // 2, (28 - h) // 2))
+    
+    img_array = np.array(new_img) / 255.0
+    return img_array.flatten()
+
 def submit():
     bg_image.save("user_drawing.png")
     processed_img = process("user_drawing.png")
+    print(np.shape(processed_img))
+    print(np.size(processed_img))
     prediction = predict_one(processed_img, X_train, Y_train, k)
     print(f"Prediction: {prediction}")
 
     print("summited")
+    
 submit_btn= tk.Button(root , text = "predict Digit" , command = submit)
 
 def clear_canvas():
